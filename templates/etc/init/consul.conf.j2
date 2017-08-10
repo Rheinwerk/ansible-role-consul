@@ -4,6 +4,9 @@ description "Consul {{ _consul.service_name }}"
 start on runlevel [2345]
 stop on runlevel [!2345]
 
+setuid consul
+setgid consul
+
 respawn
 
 script

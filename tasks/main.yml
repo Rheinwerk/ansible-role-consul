@@ -6,8 +6,14 @@
     - "{{ _consul.download.consul_url }}"
     - "{{ _consul.download.consul_template_url }}"
 
+- name: Create consul group
+  group: name="consul" state=present system=yes
+
+- name: Create consul user
+  user: name="consul" state=present system=yes group="consul" createhome=no home="/tmp" shell="/usr/sbin/nologin"
+
 - name: Create Consul Config Directory
-  file: name="{{ _consul.config_dir }}" state=directory owner="root" group="root" mode="0755"
+  file: name="{{ _consul.config_dir }}" state=directory owner="root" group="consul" mode="0755"
 
 - name: Create Consul Defaults File
   template: src="etc/default/consul.j2" dest="/etc/default/{{ _consul.service_name }}" owner="root" group="root" mode="0755"
