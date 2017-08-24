@@ -1,0 +1,10 @@
+description "Consul Template"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [06]
+
+respawn
+respawn limit 10 10
+kill timeout 10
+
+exec /usr/local/bin/consul-template -config={{ _consul.template.config_dir }}
+
