@@ -6,5 +6,7 @@
   pre_tasks:
     - file: name="/etc/dnsmasq.d" state=directory owner="root" group="root" mode="0755"
     - apt: pkg=dnsmasq state=present
+    - name: Stop dnsmasq service
+      service: name=dnsmasq state=stopped
   roles:
     - ansible-role-consul
