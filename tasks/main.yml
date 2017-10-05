@@ -36,3 +36,15 @@
      - "{{ _consul.service_name }}"
      - "consul-template"
 
+- block:
+    - name: Create dnsmasq config to forward consul domain to agent
+      template: src="{{ item }}.j2" dest="/{{ item }}"
+      with_items:
+        - "etc/dnsmasq.d/consul-forward.conf"
+      register: dnsmasq_consul
+
+    - name: Restart dnsmasq if config changed to enable consul queries
+      service: name=dnsmasq state=restarted
+      when: dnsmasq_consul|changed
+
+  when: _consul.use_dnsmasq_forwarding|default(false)

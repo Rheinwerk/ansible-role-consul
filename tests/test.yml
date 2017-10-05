@@ -3,5 +3,8 @@
   connection: local
   become: yes
   become_user: root
+  pre_tasks:
+    - file: name="/etc/dnsmasq.d" state=directory owner="root" group="root" mode="0755"
+    - apt: pkg=dnsmasq state=present
   roles:
     - ansible-role-consul
