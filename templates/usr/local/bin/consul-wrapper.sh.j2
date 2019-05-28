@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Make sure to use all our CPUs, because Consul can block a scheduler thread
+export GOMAXPROCS=$(/usr/bin/nproc)
+
+# Source additional flags if present
+if [ -f "/etc/default/{{ _consul.service_name }}" ]; then
+  . "/etc/default/{{ _consul.service_name }}"
+fi
+
+# Get the public IP
+BIND=$(/bin/ip addr show eth0 | /bin/grep 'inet ' | /usr/bin/awk '{ print substr($2,0,index($2,"/")-1) }')
+NODE_NAME=$(/bin/hostname -f)
+
+# Run the agent. Make sure to use exec so that the shell running this script
+# gets replaced and systemd tracks the consul executable.
+exec /usr/local/bin/consul agent -config-dir="{{ _consul.config_dir }}" -bind=$BIND ${CONSUL_FLAGS} -node=${NODE_NAME}

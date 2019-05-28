@@ -1,0 +1,19 @@
+[Unit]
+Description="HashiCorp Consul"
+Documentation=https://www.consul.io/
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ _consul.config_dir }}/main.json
+
+[Service]
+User=consul
+Group=consul
+# Cannot use the consul binary directly, because we need some scripting logic before it starts
+ExecStart=/bin/bash /usr/local/bin/consul-wrapper.sh
+ExecReload=/usr/local/bin/consul reload
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
