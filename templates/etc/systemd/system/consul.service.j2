@@ -14,6 +14,8 @@ ExecReload=/usr/local/bin/consul reload
 KillMode=process
 Restart=on-failure
 LimitNOFILE=65536
+StandardOutput=file:/var/log/{{ _consul.service_name }}.log
+StandardError=inherit
 
 [Install]
 WantedBy=multi-user.target
