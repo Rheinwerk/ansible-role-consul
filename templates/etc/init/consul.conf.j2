@@ -4,6 +4,10 @@ description "Consul {{ _consul.service_name }}"
 start on runlevel [2345]
 stop on runlevel [!2345]
 
+{% if _consul.oom_score_adj is defined %}
+oom score {{ _consul.oom_score_adj }}
+{% endif %}
+
 setuid consul
 setgid consul
 
