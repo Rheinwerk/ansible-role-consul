@@ -12,9 +12,7 @@ Group=consul
 ExecStart=/bin/bash /usr/local/bin/consul-wrapper.sh
 ExecReload=/usr/local/bin/consul reload
 KillMode=process
-{% if _consul.oom_score_adj is defined %}
 OOMScoreAdjust={{ _consul.oom_score_adj }}
-{% endif %}
 Restart=on-failure
 LimitNOFILE=65536
 StandardOutput=file:/var/log/{{ _consul.service_name }}.log
