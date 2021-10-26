@@ -11,9 +11,6 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the codebase
-        uses: actions/checkout@v2
-
       - name: Install Ansible Galaxy CLI
         run: pip install ansible
 
