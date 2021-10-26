@@ -8,5 +8,10 @@
     - apt: pkg=dnsmasq state=present
     - name: Stop dnsmasq service
       service: name=dnsmasq state=stopped
+    # Systemd Resolved blockiert den Port 53
+    # Kommentiere Zeile port=5353 ein
+    - name: change listen port
+      shell: |
+        sed -i "s/^#port*/port/g" /etc/dnsmasq.conf
   roles:
     - ansible-role-consul
