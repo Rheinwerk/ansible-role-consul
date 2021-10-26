@@ -1,0 +1,14 @@
+/var/log/consul*.log
+{
+	rotate {{ _consul.logging.rotation.generations|default("7") }}
+	{{ _consul.logging.rotation.frequency|default("daily")}}
+	missingok
+	notifempty
+	compress
+	compresscmd /bin/bzip2
+	uncompresscmd /bin/bunzip2
+	compressext .bz2
+	copytruncate
+	# /var/log gehört root:syslog, daher ist folgende Zeile notwendig:
+	su root syslog
+}

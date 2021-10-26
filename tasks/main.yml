@@ -41,6 +41,14 @@
     group: "root"
     mode: "0755"
 
+- name: Create Consul Logrotate Configuration
+  template:
+    src: "etc/logrotate.d/consul.j2"
+    dest: "/etc/logrotate.d/consul"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
 - name: Create Consul Template Config Directory
   file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
 
