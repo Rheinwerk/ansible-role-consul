@@ -13,7 +13,7 @@
     # In Unserem Baseimage lassen wir DNSmasq auf 127.0.0.2 laufen über eine /etc/dnsmasq.d/ Konfig
     # Als Quickfix für die CI, kommentieren wir die Zeile "#port=" ein, welche dafür sorgt,
     # dass bei Ubuntu der DNSmasq auf den Port 5353 lauscht und starten kann
-    - name: change listen port
+    - name: Kommentiere Port zeile in der /etc/dnsmasq.conf ein
       shell: |
         sed -i "s/^#port*/port/g" /etc/dnsmasq.conf
   roles:
