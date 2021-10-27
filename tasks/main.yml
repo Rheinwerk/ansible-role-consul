@@ -8,20 +8,13 @@
   with_items:
     - "{{ _consul.download.consul_url }}"
 
-- block:
-    - name: Install Consul Template
-      unarchive:
-        remote_src: yes
-        src: "{{ item }}"
-        dest: "/usr/local/bin"
-      with_items:
-        - "{{ _consul.download.consul_template_url }}"
-
-    - name: Create Consul Template Config Directory
-      file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
-
-    - name: Create Consul Templates Directory
-      file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
+- name: Install Consul Template
+  unarchive:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: "/usr/local/bin"
+  with_items:
+    - "{{ _consul.download.consul_template_url }}"
   when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - name: Create consul group
@@ -55,6 +48,14 @@
     owner: "root"
     group: "root"
     mode: "0755"
+
+- block:
+    - name: Create Consul Template Config Directory
+      file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
+
+    - name: Create Consul Templates Directory
+      file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
+  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - block:
     - name: Create Consul Upstart Script
