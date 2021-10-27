@@ -51,9 +51,11 @@
 
 - name: Create Consul Template Config Directory
   file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
+  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - name: Create Consul Templates Directory
   file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
+  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - block:
     - name: Create Consul Upstart Script
