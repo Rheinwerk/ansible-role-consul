@@ -8,8 +8,11 @@
     - apt: pkg=dnsmasq state=present
     - name: Stop dnsmasq service
       service: name=dnsmasq state=stopped
-    # Systemd Resolved blockiert den Port 53
-    # Kommentiere Zeile port=5353 ein
+    # Das Github Actions Ubuntu Image inkludiert systemd-resolved
+    # Dieses lauscht bei default auf "127.0.0.1:53", welches auch DNSmasq nutzen möchte
+    # In Unserem Baseimage lassen wir DNSmasq auf 127.0.0.2 laufen über eine /etc/dnsmasq.d/ Konfig
+    # Als Quickfix für die CI, kommentieren wir die Zeile "#port=" ein, welche dafür sorgt,
+    # dass bei Ubuntu der DNSmasq auf den Port 5353 lauscht und starten kann
     - name: change listen port
       shell: |
         sed -i "s/^#port*/port/g" /etc/dnsmasq.conf
