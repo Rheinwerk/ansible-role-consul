@@ -7,7 +7,22 @@
     dest: "/usr/local/bin"
   with_items:
     - "{{ _consul.download.consul_url }}"
-    - "{{ _consul.download.consul_template_url }}"
+
+- block:
+    - name: Install Consul Template
+      unarchive:
+        remote_src: yes
+        src: "{{ item }}"
+        dest: "/usr/local/bin"
+      with_items:
+        - "{{ _consul.download.consul_template_url }}"
+
+    - name: Create Consul Template Config Directory
+      file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
+
+    - name: Create Consul Templates Directory
+      file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
+  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - name: Create consul group
   group:
@@ -40,14 +55,6 @@
     owner: "root"
     group: "root"
     mode: "0755"
-
-- name: Create Consul Template Config Directory
-  file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
-  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
-
-- name: Create Consul Templates Directory
-  file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
-  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - block:
     - name: Create Consul Upstart Script
@@ -97,13 +104,20 @@
         - "etc/systemd/system/consul-template.service"
   when: ansible_service_mgr == "systemd" and _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
-- name: Disable services autostart
+- name: Disable {{ _consul.service_name }} autostart
   service:
     name: "{{ item }}"
     enabled: no
   with_items:
      - "{{ _consul.service_name }}"
+
+- name: Disable Consul Template Service autostart
+  service:
+    name: "{{ item }}"
+    enabled: no
+  with_items:
      - "consul-template"
+  when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - block:
     - name: Create dnsmasq config to forward consul domain to agent
