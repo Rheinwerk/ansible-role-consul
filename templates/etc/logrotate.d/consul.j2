@@ -1,4 +1,4 @@
-/var/log/consul*.log
+/var/log/{{ _consul.service_name }}.log
 {
 	rotate {{ _consul.logging.rotation.generations|default("7") }}
 	{{ _consul.logging.rotation.frequency|default("daily")}}
