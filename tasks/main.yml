@@ -41,14 +41,6 @@
     group: "root"
     mode: "0755"
 
-- name: Create Consul Logrotate Configuration
-  template:
-    src: "etc/logrotate.d/consul.j2"
-    dest: "/etc/logrotate.d/consul"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-
 - name: Create Consul Template Config Directory
   file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
   when: _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
@@ -76,16 +68,6 @@
   when: ansible_service_mgr == "upstart"
 
 - block:
-    - name: Copy Consul Wrapper Script
-      template:
-        src: "{{ item }}.j2"
-        dest: "/{{ item }}"
-        owner: "root"
-        group: "root"
-        mode: "0754"
-      with_items:
-        - "usr/local/bin/consul-wrapper.sh"
-
     - name: Create Consul systemd Script
       template:
         src: "etc/systemd/system/consul.service.j2"
@@ -94,6 +76,16 @@
         group: "root"
         mode: "0644"
 
+    - name: Create Consul Logrotate Configuration
+      template:
+        src: "etc/logrotate.d/consul.j2"
+        dest: "/etc/logrotate.d/consul"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+  when: ansible_service_mgr == "systemd"
+
+- block:
     - name: Create Consul Template systemd Script
       template:
         src: "{{ item }}.j2"
@@ -103,8 +95,7 @@
         mode: "0644"
       with_items:
         - "etc/systemd/system/consul-template.service"
-
-  when: ansible_service_mgr == "systemd"
+  when: ansible_service_mgr == "systemd" and _consul.template.config_dir is defined and  _consul.template.config_dir|length > 0
 
 - name: Disable services autostart
   service:
