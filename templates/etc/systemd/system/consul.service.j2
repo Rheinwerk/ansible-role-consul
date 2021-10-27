@@ -8,13 +8,12 @@ ConditionFileNotEmpty={{ _consul.config_dir }}/main.json
 [Service]
 User=consul
 Group=consul
-# Cannot use the consul binary directly, because we need some scripting logic before it starts
-ExecStart=/bin/bash /usr/local/bin/consul-wrapper.sh
-ExecReload=/usr/local/bin/consul reload
-KillMode=process
+EnvironmentFile=-/etc/default/{{ _consul.service_name }}
+ExecStart=/usr/local/bin/consul agent $DAEMON_ARGS $CONSUL_FLAGS
+ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=65536
-StandardOutput=file:/var/log/{{ _consul.service_name }}.log
+StandardOutput=file:{{ _consul.logfile }}
 StandardError=inherit
 
 [Install]

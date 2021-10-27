@@ -3,6 +3,8 @@ _consul:
   config_dir: "/etc/consul.d"
   flags:
     - "-dev"
+    - "-bind={{ ansible_eth0.ipv4.address }}"
+    - "-node={{ ansible_fqdn }}"
   domain: "consul"
   use_dnsmasq_forwarding: true
   download:
