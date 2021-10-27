@@ -10,3 +10,4 @@ _consul:
     consul_template_url: "https://releases.hashicorp.com/consul-template/0.19.0/consul-template_0.19.0_linux_amd64.zip"
   template:
     config_dir: "/etc/consul-template.d"
+  logfile: "/var/log/consul.log"
