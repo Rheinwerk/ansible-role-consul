@@ -1,10 +1,13 @@
+_consul_config_dir: "/etc/consul.d"
 _consul:
   service_name: "consul"
-  config_dir: "/etc/consul.d"
-  flags:
-    - "-dev"
+  config_dir: "{{ _consul_config_dir }}"
+  daemon_args:
+    - "-config-dir={{ _consul_config_dir }}"
     - "-bind={{ ansible_eth0.ipv4.address }}"
     - "-node={{ ansible_fqdn }}"
+  flags:
+    - "-dev"
   domain: "consul"
   use_dnsmasq_forwarding: true
   download:
