@@ -3,7 +3,7 @@ consul installation
 
 This role can be used to install consul and consul-template
 
-[![Build Status](https://travis-ci.org/Rheinwerk/ansible-role-consul.svg?branch=master)](https://travis-ci.org/Rheinwerk/ansible-role-consul)
+[![Build Status](https://github.com/Rheinwerk/ansible-role-consul/actions/workflows/ci.yml/badge.svg)](https://github.com/Rheinwerk/ansible-role-consul/actions/workflows/ci.yml)
 
 Notice that it will not create any configuration files, but just install
 the binaries and create startup scripts and default files. The service
