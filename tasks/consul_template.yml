@@ -15,14 +15,6 @@
   file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
 
 - block:
-    - name: Create Consul Upstart Script
-      template:
-        src: "etc/init/consul.conf.j2"
-        dest: "/etc/init/{{ _consul.service_name }}.conf"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-
     - name: Create Consul Template Upstart Script
       template:
         src: "etc/init/consul-template.conf.j2"
