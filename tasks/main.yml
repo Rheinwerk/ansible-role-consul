@@ -7,6 +7,6 @@
   include_tasks: consul.yml
 
 # Install Consul Template only when requested
-- name: Install and configure Consul Temlate
+- name: Install and configure Consul Template
   include_tasks: consul_template.yml
   when: _consul.template.install | default('false') | bool
