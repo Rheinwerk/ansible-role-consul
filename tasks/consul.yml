@@ -1,0 +1,85 @@
+---
+# vim: set ft=ansible:
+- name: Install Consul
+  unarchive:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: "/usr/local/bin"
+  with_items:
+    - "{{ _consul.download.consul_url }}"
+
+- name: Create Consul Config Directory
+  file:
+    name: "{{ _consul.config_dir }}"
+    state: directory
+    owner: "root"
+    group: "consul"
+    mode: "0755"
+
+- name: Create Consul Defaults File
+  template:
+    src: "etc/default/consul.j2"
+    dest: "/etc/default/{{ _consul.service_name }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- block:
+    - name: Create Consul Upstart Script
+      template:
+        src: "etc/init/consul.conf.j2"
+        dest: "/etc/init/{{ _consul.service_name }}.conf"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+
+    - name: Create Consul Template Upstart Script
+      template:
+        src: "etc/init/consul-template.conf.j2"
+        dest: "/etc/init/consul-template.conf"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+  when: ansible_service_mgr == "upstart"
+
+- block:
+    - name: Create Consul systemd Script
+      template:
+        src: "etc/systemd/system/consul.service.j2"
+        dest: "/etc/systemd/system/{{ _consul.service_name }}.service"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+
+    - name: Create Consul Logrotate Configuration
+      template:
+        src: "etc/logrotate.d/consul.j2"
+        dest: "/etc/logrotate.d/consul"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+  when: ansible_service_mgr == "systemd"
+
+- name: Disable {{ _consul.service_name }} autostart
+  service:
+    name: "{{ item }}"
+    enabled: no
+  with_items:
+     - "{{ _consul.service_name }}"
+
+- block:
+    - name: Create dnsmasq config to forward consul domain to agent
+      template:
+        src: "{{ item }}.j2"
+        dest: "/{{ item }}"
+        mode: "0644"
+      with_items:
+        - "etc/dnsmasq.d/consul-forward.conf"
+      register: dnsmasq_consul
+
+    - name: Restart dnsmasq if config changed to enable consul queries
+      service:
+        name: dnsmasq
+        state: restarted
+      when: dnsmasq_consul is changed
+  when: _consul.use_dnsmasq_forwarding|default(false)

@@ -1,0 +1,17 @@
+---
+# vim: set ft=ansible:
+- name: Create consul group
+  group:
+    name: "consul"
+    state: present
+    system: yes
+
+- name: Create consul user
+  user:
+    name: "consul"
+    state: present
+    system: yes
+    group: "consul"
+    createhome: no
+    home: "/tmp"
+    shell: "/usr/sbin/nologin"
