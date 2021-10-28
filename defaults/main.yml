@@ -1,9 +1,9 @@
-_consul_config_dir: "/etc/consul.d"
+CONSUL_CONFIG_DIR: "/etc/consul.d"
 _consul:
   service_name: "consul"
-  config_dir: "{{ _consul_config_dir }}"
+  config_dir: "{{ CONSUL_CONFIG_DIR }}"
   daemon_args:
-    - "-config-dir={{ _consul_config_dir }}"
+    - "-config-dir={{ CONSUL_CONFIG_DIR }}"
     - "-bind={{ ansible_default_ipv4.address }}"
     - "-node={{ ansible_fqdn }}"
   flags:
