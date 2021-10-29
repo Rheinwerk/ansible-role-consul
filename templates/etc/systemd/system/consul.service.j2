@@ -8,13 +8,17 @@ ConditionFileNotEmpty={{ _consul.config_dir }}/main.json
 [Service]
 User=consul
 Group=consul
-# Cannot use the consul binary directly, because we need some scripting logic before it starts
-ExecStart=/bin/bash /usr/local/bin/consul-wrapper.sh
-ExecReload=/usr/local/bin/consul reload
-KillMode=process
+# 'EnvironmentFile' Definition überschreiben 'Environment'
+EnvironmentFile=-/etc/default/{{ _consul.service_name }}
+# Der Parameter '-config-dir' muss gesetzt sein, ansonsten startet der Consul Client nicht
+# Sofern der User keine DAEMON_ARGS gesetzt hat, sorgt die folgende Zeile dafür, dass zumindest
+# ein default Wert gesetzt ist, mit dem der Consul Client starten kann. 
+Environment=DAEMON_ARGS="-config-dir={{ _consul.config_dir }}"
+ExecStart=/usr/local/bin/consul agent $DAEMON_ARGS $CONSUL_FLAGS
+ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=65536
-StandardOutput=file:/var/log/{{ _consul.service_name }}.log
+StandardOutput=file:{{ _consul.logfile }}
 StandardError=inherit
 
 [Install]
