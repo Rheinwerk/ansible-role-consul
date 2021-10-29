@@ -4,7 +4,7 @@ _consul:
   config_dir: "{{ CONSUL_CONFIG_DIR }}"
   daemon_args:
     - "-config-dir={{ CONSUL_CONFIG_DIR }}"
-    - "-bind={{ ansible_default_ipv4.address }}"
+    - "-bind=0.0.0.0"
     - "-node={{ ansible_fqdn }}"
   flags:
     - "-dev"
