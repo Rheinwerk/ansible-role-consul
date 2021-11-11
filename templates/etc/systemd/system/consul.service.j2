@@ -12,13 +12,13 @@ Group=consul
 EnvironmentFile=-/etc/default/{{ _consul.service_name }}
 # Der Parameter '-config-dir' muss gesetzt sein, ansonsten startet der Consul Client nicht
 # Sofern der User keine DAEMON_ARGS gesetzt hat, sorgt die folgende Zeile dafür, dass zumindest
-# ein default Wert gesetzt ist, mit dem der Consul Client starten kann. 
+# ein default Wert gesetzt ist, mit dem der Consul Client starten kann.
 Environment=DAEMON_ARGS="-config-dir={{ _consul.config_dir }}"
 ExecStart=/usr/local/bin/consul agent $DAEMON_ARGS $CONSUL_FLAGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=65536
-StandardOutput=file:{{ _consul.logfile }}
+StandardOutput=append:{{ _consul.logfile }}
 StandardError=inherit
 
 [Install]
