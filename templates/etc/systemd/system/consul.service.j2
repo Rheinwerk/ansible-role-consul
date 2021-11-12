@@ -18,8 +18,8 @@ ExecStart=/usr/local/bin/consul agent $DAEMON_ARGS $CONSUL_FLAGS
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 LimitNOFILE=65536
-# Es wird explizit "append" statt "file" genutzt da ansonsten nach dem Logrotate unleserliche Zeichen
-# im Logfile entstehen, siehe auch: https://github.com/CenterDevice/ops/issues/262
+# Es wird explizit "append" statt "file" genutzt, da ansonsten nach dem Logrotate binäre Zeichenketten
+# "@^@^@^@^.." im Logfile entstehen, siehe auch: https://github.com/CenterDevice/ops/issues/262
 StandardOutput=append:{{ _consul.logfile }}
 StandardError=inherit
 
