@@ -41,17 +41,17 @@
     group: "root"
     mode: "0755"
 
-- block:
-    - name: Create Consul Upstart Script
-      template:
-        src: "etc/init/consul.conf.j2"
-        dest: "/etc/init/{{ _consul.service_name }}.conf"
-        owner: "root"
-        group: "root"
-        mode: "0644"
+- name: Create Consul Upstart Script
+  template:
+    src: "etc/init/consul.conf.j2"
+    dest: "/etc/init/{{ _consul.service_name }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
   when: ansible_service_mgr == "upstart"
 
-- block:
+- name: SystemD block
+  block:
     - name: Create Consul systemd Script
       template:
         src: "etc/systemd/system/consul.service.j2"
@@ -76,7 +76,14 @@
   with_items:
      - "{{ _consul.service_name }}"
 
-- block:
+- name: Get package facts
+  package_facts:
+    manager: "auto"
+  when: _consul.use_dnsmasq_forwarding|default(false)
+  no_log: true
+
+- name: Dnsmasq forwarding
+  block:
     - name: Create dnsmasq config to forward consul domain to agent
       template:
         src: "{{ item }}.j2"
@@ -91,8 +98,7 @@
         name: dnsmasq
         state: restarted
       when: dnsmasq_consul is changed
-
-  when: _consul.use_dnsmasq_forwarding|default(false)
+  when: _consul.use_dnsmasq_forwarding|default(false) and 'dnsmasq' in ansible_facts.packages
 
 # Install Consul Template only when requested
 - name: Install and configure Consul Template
