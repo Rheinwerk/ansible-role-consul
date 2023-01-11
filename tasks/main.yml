@@ -83,6 +83,7 @@
   no_log: true
 
 - name: Dnsmasq forwarding
+  when: _consul.use_dnsmasq_forwarding|default(false) and 'dnsmasq' in ansible_facts.packages
   block:
     - name: Create dnsmasq config to forward consul domain to agent
       template:
