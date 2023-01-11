@@ -41,33 +41,21 @@
     group: "root"
     mode: "0755"
 
-- name: Create Consul Upstart Script
+- name: Create Consul systemd Script
   template:
-    src: "etc/init/consul.conf.j2"
-    dest: "/etc/init/{{ _consul.service_name }}.conf"
+    src: "etc/systemd/system/consul.service.j2"
+    dest: "/etc/systemd/system/{{ _consul.service_name }}.service"
     owner: "root"
     group: "root"
     mode: "0644"
-  when: ansible_service_mgr == "upstart"
 
-- name: SystemD block
-  block:
-    - name: Create Consul systemd Script
-      template:
-        src: "etc/systemd/system/consul.service.j2"
-        dest: "/etc/systemd/system/{{ _consul.service_name }}.service"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-
-    - name: Create Consul Logrotate Configuration
-      template:
-        src: "etc/logrotate.d/consul.j2"
-        dest: "/etc/logrotate.d/consul"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-  when: ansible_service_mgr == "systemd"
+- name: Create Consul Logrotate Configuration
+  template:
+    src: "etc/logrotate.d/consul.j2"
+    dest: "/etc/logrotate.d/consul"
+    owner: "root"
+    group: "root"
+    mode: "0644"
 
 - name: Disable services autostart
   service:
@@ -99,7 +87,6 @@
         name: dnsmasq
         state: restarted
       when: dnsmasq_consul is changed
-  when: _consul.use_dnsmasq_forwarding|default(false) and 'dnsmasq' in ansible_facts.packages
 
 # Install Consul Template only when requested
 - name: Install and configure Consul Template
