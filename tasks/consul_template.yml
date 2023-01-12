@@ -9,32 +9,30 @@
     - "{{ _consul.download.consul_template_url }}"
 
 - name: Create Consul Template Config Directory
-  file: name="{{ _consul.template.config_dir }}" state=directory owner="root" group="consul" mode="0755"
+  file:
+    name: "{{ _consul.template.config_dir }}"
+    state: directory
+    owner: "root"
+    group: "consul"
+    mode: "0755"
 
 - name: Create Consul Templates Directory
-  file: name="{{ _consul.template.config_dir }}/templates" state=directory owner="root" group="consul" mode="0755"
+  file:
+    name: "{{ _consul.template.config_dir }}/templates"
+    state: directory
+    owner: "root"
+    group: "consul"
+    mode: "0755"
 
-- block:
-    - name: Create Consul Template Upstart Script
-      template:
-        src: "etc/init/consul-template.conf.j2"
-        dest: "/etc/init/consul-template.conf"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-  when: ansible_service_mgr == "upstart"
-
-- block:
-    - name: Create Consul Template systemd Script
-      template:
-        src: "{{ item }}.j2"
-        dest: "/{{ item }}"
-        owner: "root"
-        group: "root"
-        mode: "0644"
-      with_items:
-        - "etc/systemd/system/consul-template.service"
-  when: ansible_service_mgr == "systemd"
+- name: Create Consul Template systemd Script
+  template:
+    src: "{{ item }}.j2"
+    dest: "/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items:
+    - "etc/systemd/system/consul-template.service"
 
 - name: Disable Consul Template Service autostart
   service:
