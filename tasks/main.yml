@@ -2,7 +2,7 @@
 # vim: set ft=ansible:
 
 - name: Install Consul
-  unarchive:
+  ansible.builtin.unarchive:
     remote_src: yes
     src: "{{ item }}"
     dest: "/usr/local/bin"
@@ -10,13 +10,13 @@
     - "{{ _consul.download.consul_url }}"
 
 - name: Create consul group
-  group:
+  ansible.builtin.group:
     name: "consul"
     state: present
     system: yes
 
 - name: Create consul user
-  user:
+  ansible.builtin.user:
     name: "consul"
     state: present
     system: yes
@@ -26,7 +26,7 @@
     shell: "/usr/sbin/nologin"
 
 - name: Create Consul Config Directory
-  file:
+  ansible.builtin.file:
     name: "{{ _consul.config_dir }}"
     state: directory
     owner: "root"
@@ -34,7 +34,7 @@
     mode: "0755"
 
 - name: Create Consul Defaults File
-  template:
+  ansible.builtin.template:
     src: "etc/default/consul.j2"
     dest: "/etc/default/{{ _consul.service_name }}"
     owner: "root"
@@ -42,7 +42,7 @@
     mode: "0755"
 
 - name: Create Consul systemd Script
-  template:
+  ansible.builtin.template:
     src: "etc/systemd/system/consul.service.j2"
     dest: "/etc/systemd/system/{{ _consul.service_name }}.service"
     owner: "root"
@@ -50,7 +50,7 @@
     mode: "0644"
 
 - name: Create Consul Logrotate Configuration
-  template:
+  ansible.builtin.template:
     src: "etc/logrotate.d/consul.j2"
     dest: "/etc/logrotate.d/consul"
     owner: "root"
@@ -58,14 +58,14 @@
     mode: "0644"
 
 - name: Disable services autostart
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     enabled: no
   with_items:
      - "{{ _consul.service_name }}"
 
 - name: Get package facts
-  package_facts:
+  ansible.builtin.package_facts:
     manager: "auto"
   when: _consul.use_dnsmasq_forwarding|default(false)
   no_log: true
@@ -74,7 +74,7 @@
   when: _consul.use_dnsmasq_forwarding|default(false) and 'dnsmasq' in ansible_facts.packages
   block:
     - name: Create dnsmasq config to forward consul domain to agent
-      template:
+      ansible.builtin.template:
         src: "{{ item }}.j2"
         dest: "/{{ item }}"
         mode: "0644"
@@ -83,12 +83,12 @@
       register: dnsmasq_consul
 
     - name: Restart dnsmasq if config changed to enable consul queries
-      service:
+      ansible.builtin.service:
         name: dnsmasq
         state: restarted
       when: dnsmasq_consul is changed
 
 # Install Consul Template only when requested
 - name: Install and configure Consul Template
-  include_tasks: consul_template.yml
+  ansible.builtin.include_tasks: consul_template.yml
   when: _consul.template.install | default('false') | bool
