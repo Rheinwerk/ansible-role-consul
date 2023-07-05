@@ -2,10 +2,8 @@ CONSUL_CONFIG_DIR: "/etc/consul.d" # noqa var-naming
 _consul:
   service_name: "consul"
   config_dir: "{{ CONSUL_CONFIG_DIR }}"
-  daemon_args:
-    - "-config-dir={{ CONSUL_CONFIG_DIR }}"
-    - "-bind=0.0.0.0"
-    - "-node={{ ansible_fqdn }}"
+  bind_addr: 0.0.0.0
+  node_name: "{{ ansible_fqdn }}"
   flags:
     - "-dev"
   domain: "consul"
