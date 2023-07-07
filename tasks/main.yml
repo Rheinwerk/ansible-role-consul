@@ -33,14 +33,6 @@
     group: "consul"
     mode: "0755"
 
-- name: Create Consul Defaults File
-  ansible.builtin.template:
-    src: "etc/default/consul.j2"
-    dest: "/etc/default/{{ _consul.service_name }}"
-    owner: "root"
-    group: "root"
-    mode: "0755"
-
 - name: Create Consul systemd Script
   ansible.builtin.template:
     src: "etc/systemd/system/consul.service.j2"
