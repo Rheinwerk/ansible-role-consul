@@ -79,8 +79,3 @@
         name: dnsmasq
         state: restarted
       when: dnsmasq_consul is changed
-
-# Install Consul Template only when requested
-- name: Install and configure Consul Template
-  ansible.builtin.include_tasks: consul_template.yml
-  when: _consul.template.install | default('false') | bool

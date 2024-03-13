@@ -10,7 +10,4 @@ _consul:
   use_dnsmasq_forwarding: true
   download:
     consul_url: "https://releases.hashicorp.com/consul/1.12.9/consul_1.12.9_linux_amd64.zip"
-    consul_template_url: "https://releases.hashicorp.com/consul-template/0.19.0/consul-template_0.19.0_linux_amd64.zip"
-  template:
-    config_dir: "/etc/consul-template.d"
   logfile: "/var/log/consul.log"
