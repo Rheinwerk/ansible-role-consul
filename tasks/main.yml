@@ -3,79 +3,86 @@
 
 - name: Install Consul
   ansible.builtin.unarchive:
-    remote_src: yes
+    remote_src: true
     src: "{{ item }}"
-    dest: "/usr/local/bin"
+    dest: /usr/local/bin
   with_items:
     - "{{ _consul.download.consul_url }}"
 
 - name: Create consul group
   ansible.builtin.group:
-    name: "consul"
+    name: consul
     state: present
-    system: yes
+    system: true
 
 - name: Create consul user
   ansible.builtin.user:
-    name: "consul"
+    name: consul
     state: present
-    system: yes
-    group: "consul"
-    createhome: no
-    home: "/tmp"
-    shell: "/usr/sbin/nologin"
+    system: true
+    group: consul
+    createhome: false
+    home: /tmp
+    shell: /usr/sbin/nologin
 
 - name: Create Consul Config Directory
   ansible.builtin.file:
     name: "{{ _consul.config_dir }}"
     state: directory
-    owner: "root"
-    group: "consul"
+    owner: root
+    group: consul
     mode: "0755"
 
 - name: Create Consul systemd Script
   ansible.builtin.template:
-    src: "etc/systemd/system/consul.service.j2"
-    dest: "/etc/systemd/system/{{ _consul.service_name }}.service"
-    owner: "root"
-    group: "root"
+    src: etc/systemd/system/consul.service.j2
+    dest: /etc/systemd/system/{{ _consul.service_name }}.service
+    owner: root
+    group: root
     mode: "0644"
 
 - name: Create Consul Logrotate Configuration
   ansible.builtin.template:
-    src: "etc/logrotate.d/consul.j2"
-    dest: "/etc/logrotate.d/consul"
-    owner: "root"
-    group: "root"
+    src: etc/logrotate.d/consul.j2
+    dest: /etc/logrotate.d/consul
+    owner: root
+    group: root
     mode: "0644"
 
 - name: Disable services autostart
   ansible.builtin.service:
     name: "{{ item }}"
-    enabled: no
-  with_items:
-     - "{{ _consul.service_name }}"
+    enabled: false
+  loop:
+    - "{{ _consul.service_name }}"
 
 - name: Get package facts
   ansible.builtin.package_facts:
-    manager: "auto"
-  when: _consul.use_dnsmasq_forwarding|default(false)
+    manager: auto
+  when: _consul.use_dns_forwarding | default(false)
   no_log: true
 
-- name: Dnsmasq forwarding
-  when: _consul.use_dnsmasq_forwarding|default(false) and 'dnsmasq' in ansible_facts.packages
+- name: Systemd-resolved forwarding
+  when: _consul.use_dns_forwarding | default(false) and 'systemd-resolved' in ansible_facts.packages
   block:
-    - name: Create dnsmasq config to forward consul domain to agent
+    - name: Create /etc/systemd/resolved.conf.d/
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d/
+        state: directory
+        owner: root
+        group: root
+
+    - name: Create systemd-resolved config to forward consul domain to agent
       ansible.builtin.template:
         src: "{{ item }}.j2"
-        dest: "/{{ item }}"
+        dest: /{{ item }}
         mode: "0644"
-      with_items:
-        - "etc/dnsmasq.d/consul-forward.conf"
-      register: dnsmasq_consul
+      loop:
+        - etc/systemd/resolved.conf.d/consul.conf
+      register: systemd_resolved_consul
 
-    - name: Restart dnsmasq if config changed to enable consul queries
-      ansible.builtin.service:
-        name: dnsmasq
+    - name: Restart systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
         state: restarted
-      when: dnsmasq_consul is changed
+      when: systemd_resolved_consul is changed

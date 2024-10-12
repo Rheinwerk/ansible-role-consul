@@ -7,7 +7,7 @@ _consul:
   flags:
     - "-dev"
   domain: "consul"
-  use_dnsmasq_forwarding: true
+  use_dns_forwarding: true
   download:
     consul_url: "https://releases.hashicorp.com/consul/1.12.9/consul_1.12.9_linux_amd64.zip"
   logfile: "/var/log/consul.log"
