@@ -1,7 +1,6 @@
 ---
 galaxy_info:
-  author: Daniel Schneller
-  namespace: rheinwerk
+  author: rheinwerk
   role_name: consul
   description: Installs Consul and Consul Template
   company: Rheinwerk
