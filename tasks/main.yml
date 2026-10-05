@@ -74,7 +74,8 @@
         - "etc/dnsmasq.d/consul-forward.conf"
       register: dnsmasq_consul
 
-    - name: Restart dnsmasq if config changed to enable consul queries
+# FIXME: https://ansible.readthedocs.io/projects/lint/rules/no-handler/
+    - name: Restart dnsmasq if config changed to enable consul queries # noqa no-handler
       ansible.builtin.service:
         name: dnsmasq
         state: restarted
