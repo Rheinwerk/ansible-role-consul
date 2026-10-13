@@ -3,7 +3,7 @@ _consul:
   service_name: "consul"
   config_dir: "{{ CONSUL_CONFIG_DIR }}"
   bind_addr: 0.0.0.0
-  node_name: "{{ ansible_fqdn }}"
+  node_name: "{{ ansible_facts['fqdn'] }}"
   flags:
     - "-dev"
   domain: "consul"
